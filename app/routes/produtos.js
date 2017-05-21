@@ -3,9 +3,9 @@ module.exports = function(app){
 	app.get("/produtos", function(request, response){
 
 		var connection = app.infra.connectionFactory();
-		var produtosBanco = app.infra.produtosBanco;
+		var produtosDAO = new app.infra.ProdutosDAO(connection);
 
-		produtosBanco.lista(connection, function(err, results) {
+		produtosDAO.lista(function(err, results) {
 			response.render("produtos/lista", {lista:results})
 		});
 		
