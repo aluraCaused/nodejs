@@ -23,19 +23,26 @@ module.exports = function(app){
 	});
 
 	app.get("/produtos/form", function(request, response){
-		response.render("produtos/form");
+		response.render("produtos/form", {errosValidacao: {}, produto:{}});
 	})
 
 	app.post("/produtos", function(request, response){
 		var produto = request.body;
 
-		var tituloValidator = request.assert("titulo", "Título é obrigatorio");
-		tituloValidator.notEmpty();
-
+		request.assert("titulo", "Título é obrigatorio").notEmpty();
+		request.assert("preco", "Formato inválido").isFloat();
+		
 		var erros = request.validationErrors();
 
 		if(erros){
-			response.render("produtos/form");
+			response.format({
+				html: function(){
+					response.status(400).render("produtos/form", {errosValidacao: erros, produto:produto});
+				},
+				json: function(){
+					response.status(400).json(erros);
+				}
+			})
 			return;
 		}
 		
