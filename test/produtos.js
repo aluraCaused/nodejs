@@ -1,7 +1,15 @@
 var express = require("../config/express")();
 var request = require("supertest")(express);
+var DataBaseCleaner = require("database-cleaner");
 
 describe("#ProdutosController", function(){
+
+    beforeEach(function(done){
+        var cleaner = new DataBaseCleaner("mysql");
+        cleaner.clean(express.infra.connectionFactory(), function(){
+            done();
+        })
+    })
     it("#listagem json", function(done){
         request.get("/produtos")
         .set("Accept", "text/html")
